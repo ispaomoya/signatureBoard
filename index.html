@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>canvas</title>
+</head>
+
+<body>
+    <!-- 三要素，id，width，height 给他加个边框-->
+    <canvas id="canvas1" width="280" height="140" style="border:1px solid pink">
+        您的浏览器不支持画布，请更新浏览器或下载谷歌浏览器！
+    </canvas>
+    <button id="savebtn">显示</button>
+    <button id="clearbtn">清空</button>
+    <!-- 签名后，显示 -->
+    <div></div>
+    <script>
+        let canvas1 = document.querySelector('#canvas1')// 1起变量
+        console.log('画布的属性', [canvas1]);
+       let ctx = canvas1.getContext("2d") //2上下文对象（画笔）
+        console.log('创建2d平面，，webgl是3d', ctx);
+        var offsetX = ''
+        var offsetY = ''
+        var iscanvas = false//状态是否进行
+        //当鼠标在画布内点击时，拿到当前区域的x，y坐标，并把状态改为true
+        canvas1.addEventListener('mousedown', function (e) {
+            iscanvas = true
+            offsetX = e.offsetX//获取当前点击的x坐标
+            offsetY = e.offsetY//获取当前点击的y坐标
+        })
+        //鼠标移动时，判断状态是否为true（只有在鼠标点击时，移动鼠标才会执行以下代码）
+        canvas1.addEventListener('mousemove', function (e) {
+            if (iscanvas) {
+                ctx.beginPath();//开始绘画
+                ctx.moveTo(offsetX, offsetY)//开始画的x，y坐标
+                ctx.lineTo(e.offsetX, e.offsetY)//结束画的x，y坐标
+                ctx.lineWidth = 2//画线的粗细
+                ctx.stroke()//画完后渲染
+                offsetX = e.offsetX;//若不加这两行，大幅度移动会基于点击时那个点绘画
+                offsetY = e.offsetY;
+            }
+        })
+        canvas1.addEventListener('mouseup', function (e) {
+            iscanvas = false//鼠标释放时，状态外false
+        })
+        canvas1.addEventListener("mouseleave", function (e) {
+            iscanvas = false;//鼠标离开元素时，状态为false
+        })
+        var clearbtn = document.getElementById("clearbtn");
+        clearbtn.addEventListener("click", function () {
+            //当点击清空按钮时，ctx清除（x坐标，y坐标，画布宽度，画布高度）
+            ctx.clearRect(0, 0, canvas1.width, canvas1.height)
+        })
+        //把签名的照返回成[object HTMLImageElement]
+        function convertCanvasToImage(canvas1) {
+            var image = new Image();
+            image.src = canvas1.toDataURL("image/png");
+            return image;
+        }
+        var savebtn = document.getElementById("savebtn");
+        var div = document.querySelector('div')
+        //当点击显示按钮，把刚才写的签名照在div内显示
+        savebtn.addEventListener("click", function () {
+            let a = convertCanvasToImage(canvas1)
+            div.append(a)
+        })
+    </script>
+</body>
+
+</html>
